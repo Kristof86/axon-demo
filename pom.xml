@@ -26,8 +26,8 @@
     </properties>
 
     <modules>
-        <module>axon-demo-frontend</module>
         <module>axon-demo-accounts</module>
+        <module>axon-demo-frontend</module>
     </modules>
 
     <dependencyManagement>
