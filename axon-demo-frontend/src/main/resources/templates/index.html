@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.springframework.org/schema/mvc">
+<head>
+    <title>Axon Demo</title>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="_ctx" th:content="${#httpServletRequest.getContextPath()}" />
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="/fontawesome/css/all.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro" type="text/css" />
+    <link rel="stylesheet" th:href="@{/demo/css/all.css}" />
+
+</head>
+<body>
+
+<div id="container">
+    <h2 id="title">
+        Accounts
+    </h2>
+    <div id="content">
+        <!-- placeholder for page content -->
+    </div>
+</div>
+
+
+<!-- Handlebars templates -->
+<div th:replace="fragments/tools :: modal-tmpl"></div>
+<div th:replace="fragments/accounts :: accounts-overview-tmpl"></div>
+<div th:replace="fragments/accounts :: accounts-detail-tmpl"></div>
+<div th:replace="fragments/accounts :: accounts-form-tmpl"></div>
+<div th:replace="fragments/accounts :: accounts-change-name-tmpl"></div>
+
+<!-- Javascript -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js" integrity="sha512-RNLkV3d+aLtfcpEyFG8jRbnWHxUqVZozacROI4J2F1sTaDqo1dPQYs01OMi1t1w9Y2FdbSCDSQ2ZVdAC8bzgAg==" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/underscore@1.13.1/underscore-umd-min.js" ></script>
+
+<script th:src="@{/jsonserialize/jquery-serialize-object.min.js}"></script>
+<script th:src="@{/director/director.min.js}"></script>
+<script th:src="@{/demo/javascript/app.js}"></script>
+<script th:src="@{/demo/javascript/accounts.js}"></script>
+<script th:src="@{/demo/javascript/rsocket.js}"></script>
+<script th:src="@{/demo/javascript/tools.js}"></script>
+<script th:src="@{/rsocket/wrapped-rsocket-js.js}"></script>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    $(document).ready(function() {
+        App.init();
+    });
+    /*]]>*/
+</script>
+
+</body>
+</html>

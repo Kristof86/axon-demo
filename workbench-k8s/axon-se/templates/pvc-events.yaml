@@ -1,0 +1,16 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: axon-events
+  labels:
+    app: axonserver
+    # chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    # release: "{{ .Release.Name }}"
+    # heritage: "{{ .Release.Service }}"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+# storageClassName: ""

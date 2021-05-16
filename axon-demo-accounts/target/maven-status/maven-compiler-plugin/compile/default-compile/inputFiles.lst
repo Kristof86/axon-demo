@@ -1,0 +1,17 @@
+/Users/kristofennekens/Craftworkz/axon-demo/axon-demo-accounts/src/main/java/be/sansoft/axondemo/accounts/view/projection/AccountDetails.java
+/Users/kristofennekens/Craftworkz/axon-demo/axon-demo-accounts/src/main/java/be/sansoft/axondemo/accounts/view/projection/AccountsRow.java
+/Users/kristofennekens/Craftworkz/axon-demo/axon-demo-accounts/src/main/java/be/sansoft/axondemo/accounts/view/projection/AccountsProjection.java
+/Users/kristofennekens/Craftworkz/axon-demo/axon-demo-accounts/src/main/java/be/sansoft/axondemo/accounts/view/projection/AccountsEntity.java
+/Users/kristofennekens/Craftworkz/axon-demo/axon-demo-accounts/src/main/java/be/sansoft/axondemo/accounts/view/projection/AccountDetailsRepository.java
+/Users/kristofennekens/Craftworkz/axon-demo/axon-demo-accounts/src/main/java/be/sansoft/axondemo/accounts/view/query/FindAccountDetailsByIdQuery.java
+/Users/kristofennekens/Craftworkz/axon-demo/axon-demo-accounts/src/main/java/be/sansoft/axondemo/accounts/view/projection/AccountDetailsEntity.java
+/Users/kristofennekens/Craftworkz/axon-demo/axon-demo-accounts/src/main/java/be/sansoft/axondemo/accounts/web/request/CreateAccountRequest.java
+/Users/kristofennekens/Craftworkz/axon-demo/axon-demo-accounts/src/main/java/be/sansoft/axondemo/accounts/AxonDemoAccountsApplication.java
+/Users/kristofennekens/Craftworkz/axon-demo/axon-demo-accounts/src/main/java/be/sansoft/axondemo/accounts/web/AccountsController.java
+/Users/kristofennekens/Craftworkz/axon-demo/axon-demo-accounts/src/main/java/be/sansoft/axondemo/accounts/domain/commands/CreateAccountCommand.java
+/Users/kristofennekens/Craftworkz/axon-demo/axon-demo-accounts/src/main/java/be/sansoft/axondemo/accounts/view/query/FindAllAccountsQuery.java
+/Users/kristofennekens/Craftworkz/axon-demo/axon-demo-accounts/src/main/java/be/sansoft/axondemo/accounts/view/projection/AccountDetailsProjection.java
+/Users/kristofennekens/Craftworkz/axon-demo/axon-demo-accounts/src/main/java/be/sansoft/axondemo/accounts/domain/Account.java
+/Users/kristofennekens/Craftworkz/axon-demo/axon-demo-accounts/src/main/java/be/sansoft/axondemo/accounts/domain/events/AccountCreatedEvent.java
+/Users/kristofennekens/Craftworkz/axon-demo/axon-demo-accounts/src/main/java/be/sansoft/axondemo/accounts/view/projection/AccountsRepository.java
+/Users/kristofennekens/Craftworkz/axon-demo/axon-demo-accounts/src/main/java/be/sansoft/axondemo/accounts/web/configuration/CustomWebMvcConfigurerer.java
