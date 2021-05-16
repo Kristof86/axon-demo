@@ -23,7 +23,7 @@ var RSocket = {};
                 metadataMimeType: 'message/x.rsocket.routing.v0',
             },
             transport: new this.RSocketWebSocketClient({
-                url: 'wss://axon-demo-accounts-kristof86.cloud.okteto.net:7000/rsocket'
+                url: 'wss://axon-demo-accounts-kristof86.cloud.okteto.net/rsocket'
             }),
         });
 
