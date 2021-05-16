@@ -1,0 +1,29 @@
+<html lang="en" xmlns:th="http://www.springframework.org/schema/mvc">
+
+    <script th:fragment="modal-tmpl" id="modal-tmpl" type="text/x-handlebars-template">
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog {{size}}">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="myModalLabel">{{title}}</h4>
+                        {{#showDismissButton}}
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        {{/showDismissButton}}
+                    </div>
+                    <div class="modal-body">
+                        <div>{{{content}}}</div>
+                    </div>
+                    <div class="modal-footer">
+                        {{#showConfirmButton}}
+                        <button type="button" class="btn btn-primary">{{confirmLbl}}</button>
+                        {{/showConfirmButton}}
+                        {{#showCancelButton}}
+                        <button type="button" class="btn btn-default" data-dismiss="modal">{{cancelLbl}}</button>
+                        {{/showCancelButton}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+
+</html>

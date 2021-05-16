@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: axonserver
+  labels:
+    app: axonserver
+spec:
+  serviceName: axonserver
+  replicas: 1
+  selector:
+    matchLabels:
+      app: axonserver
+  template:
+    metadata:
+      labels:
+        app: axonserver
+    spec:
+      containers:
+      - name: axonserver
+        image: axoniq/axonserver
+        imagePullPolicy: Always
+        ports:
+        - name: grpc
+          containerPort: 8124
+          protocol: TCP
+        - name: gui
+          containerPort: 8024
+          protocol: TCP
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        - name: events
+          mountPath: /eventdata
+        #readinessProbe:
+          #httpGet:
+            #path: /actuator/info
+            #port: gui
+          #initialDelaySeconds: 5
+          #periodSeconds: 5
+          #timeoutSeconds: 1
+          #failureThreshold: 30
+        livenessProbe:
+          httpGet:
+            path: /actuator/info
+            port: gui
+          initialDelaySeconds: 15
+          periodSeconds: 20
+          successThreshold: 1
+          failureThreshold: 3
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: axon-data
+      - name: events
+        persistentVolumeClaim:
+          claimName: axon-events

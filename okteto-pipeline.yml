@@ -1,0 +1,11 @@
+deploy:
+#  - okteto build -t okteto.dev/cdc-main-maven:latest cdc-main-maven
+  - helm repo update
+  - helm repo add bitnami https://charts.bitnami.com/bitnami
+  - helm upgrade --install axonserver ./workbench-k8s/axon-se
+  - helm install postgresql bitnami/postgresql
+#  - kubectl apply -f ./cdc-main-maven/k8s
+devs:
+#  - cdc-main/okteto.yml
+#  - cdc-main-maven/okteto.yml
+#  - cdc-transformer/okteto.yml
