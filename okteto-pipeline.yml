@@ -3,7 +3,7 @@ deploy:
   - helm repo update
   - helm repo add bitnami https://charts.bitnami.com/bitnami
   - helm upgrade --install axonserver ./workbench-k8s/axon-se
-  - helm install postgresql bitnami/postgresql --set persistence.size=1Gi,global.postgresql.postgresqlDatabase=axon,global.postgresql.postgresqlUsername=axon,global.postgresql.postgresqlPassword=axon
+  - helm install postgresql bitnami/postgresql --set persistence.size=1Gi,postgresqlPassword=secretpassword,postgresqlDatabase=axondb
   - kubectl apply -f ./axon-demo-accounts/k8s
 devs:
 #  - cdc-main/okteto.yml
