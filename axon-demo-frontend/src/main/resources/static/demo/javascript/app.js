@@ -42,6 +42,7 @@ var App = {
             contextPath = '';
         }
         this.registry.contextPath = contextPath;
-        this.registry.accountsServiceUrl = 'http://localhost:8080'
+        //this.registry.accountsServiceUrl = 'http://localhost:8080'
+        this.registry.accountsServiceUrl = 'https://axon-demo-accounts-kristof86.cloud.okteto.net'
     };
 })(jQuery);
