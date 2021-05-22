@@ -1,10 +1,10 @@
 package be.sansoft.axondemo.accounts.view.projection.details;
 
 import be.sansoft.axondemo.accounts.domain.events.AccountCreatedEvent;
+import be.sansoft.axondemo.accounts.domain.events.AccountDeletedEvent;
 import be.sansoft.axondemo.accounts.domain.events.ChangeNameEvent;
 import be.sansoft.axondemo.accounts.view.projection.overview.AccountDetailsRepository;
 import be.sansoft.axondemo.accounts.view.query.FindAccountDetailsByIdQuery;
-import be.sansoft.axondemo.accounts.view.query.FindAllAccountsQuery;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.queryhandling.QueryHandler;
 import org.axonframework.queryhandling.QueryUpdateEmitter;
@@ -65,6 +65,16 @@ public class AccountDetailsProjection {
                     findDetails(new FindAccountDetailsByIdQuery(event.getId())));
             }
         );
+    }
+
+    @EventHandler
+    public void on(AccountDeletedEvent event) {
+        repository.findById(event.getId()).ifPresent(entity -> {
+            repository.delete(entity);
+            queryUpdateEmitter.emit(FindAccountDetailsByIdQuery.class,
+                    query -> query.getId().equals(event.getId()),
+                    findDetails(new FindAccountDetailsByIdQuery(event.getId())));
+        });
     }
 
     @QueryHandler

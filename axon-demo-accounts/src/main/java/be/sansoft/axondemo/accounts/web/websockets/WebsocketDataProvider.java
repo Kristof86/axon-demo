@@ -4,6 +4,7 @@ import be.sansoft.axondemo.accounts.view.projection.details.AccountDetailsEntity
 import be.sansoft.axondemo.accounts.view.projection.overview.AccountsOverviewEntity;
 import be.sansoft.axondemo.accounts.view.query.FindAccountDetailsByIdQuery;
 import be.sansoft.axondemo.accounts.view.query.FindAllAccountsQuery;
+import lombok.extern.slf4j.Slf4j;
 import org.axonframework.queryhandling.QueryGateway;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -17,6 +18,7 @@ import java.util.function.Consumer;
 /**
  * @author kristofennekens
  */
+@Slf4j
 @Component
 public class WebsocketDataProvider {
 
@@ -30,12 +32,13 @@ public class WebsocketDataProvider {
     }
 
     @EventListener(ApplicationReadyEvent.class)
-    public void sendUpdatesToSubcribers() {
+    public void sendUpdatesToSubscribers() {
         updateAccountsOverview();
     }
 
     private void updateAccountsOverview() {
         Consumer<AccountsOverviewEntity> handleResult = overview -> {
+            log.debug("Send to /topic/accounts/all");
             simpMessagingTemplate.convertAndSend(
                     "/topic/accounts/all",
                     overview.getData().getRows()
@@ -51,6 +54,7 @@ public class WebsocketDataProvider {
         if (!accountDetailSubscriptions.contains(id)) {
             accountDetailSubscriptions.add(id);
             Consumer<AccountDetailsEntity> handleResult = details -> {
+                log.debug("Send to /topic/accounts/" + id + "/details");
                 simpMessagingTemplate.convertAndSend(
                         "/topic/accounts/" + id + "/details",
                         details.getData()

@@ -5,6 +5,7 @@ import be.sansoft.axondemo.accounts.view.projection.details.AccountDetails;
 import be.sansoft.axondemo.accounts.view.projection.details.AccountDetailsEntity;
 import be.sansoft.axondemo.accounts.view.projection.overview.AccountsOverviewEntity;
 import be.sansoft.axondemo.accounts.view.projection.overview.AccountsOverviewRow;
+import be.sansoft.axondemo.accounts.view.projection.overview.AccountsOverviewRowWrapper;
 import be.sansoft.axondemo.accounts.view.query.FindAccountDetailsByIdQuery;
 import be.sansoft.axondemo.accounts.view.query.FindAllAccountsQuery;
 import be.sansoft.axondemo.accounts.web.websockets.WebsocketDataProvider;
@@ -61,10 +62,12 @@ public class AccountsController {
 
     @GetMapping("/accounts")
     public ResponseEntity<List<AccountsOverviewRow>> findAll() {
+        AccountsOverviewEntity overview = queryGateway
+                .query(new FindAllAccountsQuery(), ResponseTypes.instanceOf(AccountsOverviewEntity.class))
+                .join();
+
         return ResponseEntity.ok(
-                queryGateway
-                        .query(new FindAllAccountsQuery(), ResponseTypes.instanceOf(AccountsOverviewEntity.class))
-                        .join().getData().getRows()
+                overview != null ? overview.getData().getRows() : List.of()
         );
     }
 
