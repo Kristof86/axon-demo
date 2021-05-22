@@ -1,10 +1,13 @@
 package be.sansoft.axondemo.accounts;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+
+import java.util.List;
 
 /**
  * @author kristofennekens
@@ -12,6 +15,12 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebsocketConfiguration implements WebSocketMessageBrokerConfigurer {
+
+    private final List<String> allowedOrigins;
+
+    WebsocketConfiguration(@Value("${security.webmvc.allowed-origins}") List<String> allowedOrigins) {
+        this.allowedOrigins = allowedOrigins;
+    }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
@@ -21,7 +30,9 @@ public class WebsocketConfiguration implements WebSocketMessageBrokerConfigurer 
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/gs-guide-websocket").withSockJS();
+
+        registry.addEndpoint("/accounts").setAllowedOrigins(this.allowedOrigins.toArray(new String[]{}));
+        registry.addEndpoint("/accounts").setAllowedOrigins(this.allowedOrigins.toArray(new String[]{})).withSockJS();
     }
 
 }

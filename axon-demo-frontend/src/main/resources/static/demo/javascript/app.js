@@ -15,7 +15,7 @@ var App = {
         // Init modules
         Tools.init();
         Accounts.init();
-        RSocket.init();
+        //RSocket.init();
 
     };
 

@@ -38,6 +38,37 @@ var Accounts = {};
                 { accounts : [] }
             ));
         }
+
+        Websockets.connect
+
+        var socket = new SockJS(App.registry.accountsServiceRestUrl + "/accounts");
+        const stompClient = Stomp.over(socket);
+        stompClient.connect({}, function (frame) {
+            //setConnected(true);
+            console.log('Connected: ' + frame);
+            stompClient.subscribe( '/topic/accounts/all', function (accounts) {
+                console.log('accounts', accounts);
+                accounts = JSON.parse(accounts.body);
+                if (self.page === 'OVERVIEW') {
+                    App.$container.html(self.accountsOverviewTmpl(
+                        { accounts : accounts }
+                    ));
+                }
+            });
+            stompClient.send("/app/accounts/all", {}, {});
+        });
+
+
+/*
+        function disconnect() {
+            if (stompClient !== null) {
+                stompClient.disconnect();
+            }
+            setConnected(false);
+            console.log("Disconnected");
+        }
+
+
         RSocket.addNewStream({
             route : 'accounts.all',
             onNext: function(data) {
@@ -91,6 +122,8 @@ var Accounts = {};
                 });
             }
         })
+        */
+
 
         const addAccountHandler = this.addAccount.bind(this);
         $(document).on('click','body #add-account', addAccountHandler);
@@ -121,7 +154,7 @@ var Accounts = {};
     Accounts.view = function(id) {
         var self = this;
         let account;
-        RSocket.addNewStream({
+        Websockets.addNewStream({
             route : 'accounts.detail',
             data : {id : id},
             onNext: function(data) {
