@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.extensions.reactor.queryhandling.gateway.ReactorQueryGateway;
 import org.axonframework.queryhandling.QueryGateway;
+import org.axonframework.queryhandling.SubscriptionQueryResult;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.*;
@@ -76,7 +77,8 @@ public class AccountsController {
 
     @MessageMapping("accounts.all")
     public Flux<List<AccountsOverviewRow>> all() {
-
+        QueryGateway queryGateway = null;
+        SubscriptionQueryResult<AccountsOverviewEntity, AccountsOverviewEntity> accountsOverviewEntityAccountsOverviewEntitySubscriptionQueryResult = queryGateway.subscriptionQuery(new FindAllAccountsQuery(), AccountsOverviewEntity.class, AccountsOverviewEntity.class);
         return reactorQueryGateway.subscriptionQuery(new FindAllAccountsQuery(), AccountsOverviewEntity.class).map(entity -> entity.getData().getRows());
 
     }

@@ -1,11 +1,13 @@
 var Accounts = {};
 (function($) {
     Accounts.init = function() {
-        console.log('init')
+        console.log('Init Accounts Module')
+
+        // Init templates
         this.accountsOverviewTmpl = Handlebars.compile($('#accounts-overview-tmpl').html());
-        this.accountsFormTmpl = Handlebars.compile($('#accounts-form-tmpl').html());
-        this.accountsDetailTmpl = Handlebars.compile($('#accounts-detail-tmpl').html());
-        this.accountsChangeNameTmpl = Handlebars.compile($('#accounts-change-name-tmpl').html());
+        this.addAccountTmpl = Handlebars.compile($('#add-account-tmpl').html());
+        this.accountDetailTmpl = Handlebars.compile($('#account-detail-tmpl').html());
+        this.changeAccountNameTmpl = Handlebars.compile($('#change-account-name-tmpl').html());
 
         const accountOverviewHandler = function() {
             this.page = 'OVERVIEW';
@@ -23,14 +25,19 @@ var Accounts = {};
             '/accounts': accountOverviewHandler,
             '/accounts/:id': accountDetailHandler
         };
+        // Load /accounts by default
         Router(routes).init('/accounts');
     };
-
 
     Accounts.overview = function() {
         var self = this;
 
         let accounts;
+        if (typeof (accounts) === 'undefined' ) {
+            App.$container.html(self.accountsOverviewTmpl(
+                { accounts : [] }
+            ));
+        }
         RSocket.addNewStream({
             route : 'accounts.all',
             onNext: function(data) {
@@ -47,7 +54,7 @@ var Accounts = {};
                         type: 'DELETE',
                         dataType: 'json',
                         contentType : 'application/json',
-                        url: App.registry.accountsServiceUrl + '/deleteAccount/' + id,
+                        url: App.registry.accountsServiceRestUrl + '/deleteAccount/' + id,
                         processData: false,
                         success: function (data) {
                             //alert('jroepi');
@@ -61,7 +68,7 @@ var Accounts = {};
                     console.log(content);
                     Tools.modal.show({
                         title : 'Change Name',
-                        content : self.accountsChangeNameTmpl(
+                        content : self.changeAccountNameTmpl(
                             { account: content }
                         ),
                         confirmLbl : 'Change Name',
@@ -71,7 +78,7 @@ var Accounts = {};
                                 type: 'POST',
                                 dataType: 'json',
                                 contentType : 'application/json',
-                                url: App.registry.accountsServiceUrl + '/changeName/' + id,
+                                url: App.registry.accountsServiceRestUrl + '/changeName/' + id,
                                 processData: false,
                                 data : Tools.formToJson(modal.modal.find('form')),
                                 success: function (data) {
@@ -92,7 +99,7 @@ var Accounts = {};
     Accounts.addAccount = function() {
         Tools.modal.show({
             title : 'Add Account',
-            content : this.accountsFormTmpl(),
+            content : this.addAccountTmpl(),
             confirmLbl : 'Add',
             autohide : true,
             callback : function(modal) {
@@ -100,7 +107,7 @@ var Accounts = {};
                     type: 'POST',
                     dataType: 'json',
                     contentType : 'application/json',
-                    url: App.registry.accountsServiceUrl + '/createAccount',
+                    url: App.registry.accountsServiceRestUrl + '/createAccount',
                     processData: false,
                     data : Tools.formToJson(modal.modal.find('form')),
                     success: function (data) {
@@ -120,7 +127,7 @@ var Accounts = {};
             onNext: function(data) {
                 account = data;
                 if (self.page === 'DETAILS') {
-                    App.$container.html(self.accountsDetailTmpl(
+                    App.$container.html(self.accountDetailTmpl(
                         { account : data }
                     ));
                 }

@@ -82,7 +82,12 @@ public class AccountsOverviewProjection {
 
     @QueryHandler
     public AccountsOverviewEntity findAll(FindAllAccountsQuery query) {
-        return repository.findAll().get(0);
+        List<AccountsOverviewEntity> all = repository.findAll();
+        if (CollectionUtils.isEmpty(all)) {
+            return null;
+        } else {
+            return all.get(0);
+        }
     }
 
 }

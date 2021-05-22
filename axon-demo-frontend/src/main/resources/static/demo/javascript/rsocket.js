@@ -1,6 +1,7 @@
 var RSocket = {};
 (function($) {
     RSocket.init = function() {
+        console.log('Init RSocket Module')
         var self = this;
     };
 
@@ -23,7 +24,7 @@ var RSocket = {};
                 metadataMimeType: 'message/x.rsocket.routing.v0',
             },
             transport: new this.RSocketWebSocketClient({
-                url: 'wss://axon-demo-accounts-kristof86.cloud.okteto.net/rsocket'
+                url: App.registry.accountsServiceWsUrl
             }),
         });
 
