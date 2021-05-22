@@ -27,7 +27,7 @@ public class AccountsOverviewProjection {
     }
 
     @EventHandler
-    public void handle(AccountCreatedEvent event) {
+    public void on(AccountCreatedEvent event) {
         List<AccountsOverviewEntity> accounts = repository.findAll();
         if (CollectionUtils.isEmpty(accounts)) {
             repository.save(AccountsOverviewEntity.of(
@@ -43,20 +43,20 @@ public class AccountsOverviewProjection {
     }
 
     @EventHandler
-    public void handle(ChangeNameEvent event) {
+    public void on(ChangeNameEvent event) {
         AccountsOverviewEntity entity = repository.findAll().get(0);
         entity.getData().getRows().stream().filter(row -> row.getId().equals(event.getId())).findFirst().ifPresent( row -> {
             row.setFirstName(event.getFirstName());
             row.setLastName(event.getLastName());
-        });
 
-        queryUpdateEmitter.emit(FindAllAccountsQuery.class,
-                query -> true,
-                findAll(new FindAllAccountsQuery()));
+            queryUpdateEmitter.emit(FindAllAccountsQuery.class,
+                    query -> true,
+                    findAll(new FindAllAccountsQuery()));
+        });
     }
 
     @EventHandler
-    public void handle(AccountDeletedEvent event) {
+    public void on(AccountDeletedEvent event) {
         List<AccountsOverviewEntity> accounts = repository.findAll();
         if (CollectionUtils.isEmpty(accounts)) {
             return;
@@ -83,11 +83,7 @@ public class AccountsOverviewProjection {
     @QueryHandler
     public AccountsOverviewEntity findAll(FindAllAccountsQuery query) {
         List<AccountsOverviewEntity> all = repository.findAll();
-        if (CollectionUtils.isEmpty(all)) {
-            return null;
-        } else {
-            return all.get(0);
-        }
+        return CollectionUtils.isEmpty(all) ? null : all.get(0);
     }
 
 }

@@ -1,4 +1,4 @@
-package be.sansoft.axondemo.accounts;
+package be.sansoft.axondemo.accounts.web.configuration;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -25,7 +25,7 @@ public class WebsocketConfiguration implements WebSocketMessageBrokerConfigurer 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/topic");
-        config.setApplicationDestinationPrefixes("/app");
+        //config.setApplicationDestinationPrefixes("/app");
     }
 
     @Override

@@ -25,7 +25,7 @@ public class AccountDetailsProjection {
     }
 
     @EventHandler
-    public void handle(AccountCreatedEvent event) {
+    public void on(AccountCreatedEvent event) {
         repository.findById(event.getId()).ifPresentOrElse(
                 entity -> {
                     entity.getData().setFirstName(event.getFirstName());
@@ -55,19 +55,20 @@ public class AccountDetailsProjection {
     }
 
     @EventHandler
-    public void handle(ChangeNameEvent event) {
-        AccountDetailsEntity entity = repository.findById(event.getId()).get();
-        entity.getData().setFirstName(event.getFirstName());
-        entity.getData().setLastName(event.getLastName());
+    public void on(ChangeNameEvent event) {
+        repository.findById(event.getId()).ifPresent(entity -> {
+            entity.getData().setFirstName(event.getFirstName());
+            entity.getData().setLastName(event.getLastName());
 
-        queryUpdateEmitter.emit(FindAccountDetailsByIdQuery.class,
-                query -> query.getId().equals(event.getId()),
-                findDetails(new FindAccountDetailsByIdQuery(event.getId())));
+            queryUpdateEmitter.emit(FindAccountDetailsByIdQuery.class,
+                    query -> query.getId().equals(event.getId()),
+                    findDetails(new FindAccountDetailsByIdQuery(event.getId())));
+            }
+        );
     }
 
     @QueryHandler
     public AccountDetailsEntity findDetails(FindAccountDetailsByIdQuery query) {
         return repository.findById(query.getId()).orElse(null);
     }
-
 }

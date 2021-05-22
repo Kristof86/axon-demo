@@ -10,12 +10,14 @@ var Accounts = {};
         this.changeAccountNameTmpl = Handlebars.compile($('#change-account-name-tmpl').html());
 
         const accountOverviewHandler = function() {
+            Websockets.disconnect();
             this.page = 'OVERVIEW';
             Tools.setTitle('Accounts')
             this.overview();
         }.bind(this);
 
         const accountDetailHandler = function(id) {
+            Websockets.disconnect();
             this.page = 'DETAILS';
             Tools.setTitle('Account Details')
             this.view(id);
@@ -32,102 +34,84 @@ var Accounts = {};
     Accounts.overview = function() {
         var self = this;
 
-        let accounts;
-        if (typeof (accounts) === 'undefined' ) {
-            App.$container.html(self.accountsOverviewTmpl(
-                { accounts : [] }
-            ));
-        }
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            contentType : 'application/json',
+            url: App.registry.accountsServiceRestUrl + '/accounts',
+            success: function (accounts) {
+                App.$container.html(self.accountsOverviewTmpl(
+                    { accounts : accounts }
+                ));
+                Accounts.registerTableEvents();
 
-        Websockets.connect
-
-        var socket = new SockJS(App.registry.accountsServiceRestUrl + "/accounts");
-        const stompClient = Stomp.over(socket);
-        stompClient.connect({}, function (frame) {
-            //setConnected(true);
-            console.log('Connected: ' + frame);
-            stompClient.subscribe( '/topic/accounts/all', function (accounts) {
-                console.log('accounts', accounts);
-                accounts = JSON.parse(accounts.body);
-                if (self.page === 'OVERVIEW') {
-                    App.$container.html(self.accountsOverviewTmpl(
-                        { accounts : accounts }
-                    ));
-                }
-            });
-            stompClient.send("/app/accounts/all", {}, {});
+                Websockets.connect({
+                    url : App.registry.accountsServiceRestUrl + "/accounts",
+                    connected: function(client) {
+                        client.subscribe('/topic/accounts/all', function (accounts) {
+                            console.log('accounts', accounts);
+                            accounts = JSON.parse(accounts.body);
+                            if (self.page === 'OVERVIEW') {
+                                App.$container.html(self.accountsOverviewTmpl(
+                                    { accounts : accounts }
+                                ));
+                            }
+                            Accounts.registerTableEvents();
+                        });
+                    }
+                });
+            }
         });
-
-
-/*
-        function disconnect() {
-            if (stompClient !== null) {
-                stompClient.disconnect();
-            }
-            setConnected(false);
-            console.log("Disconnected");
-        }
-
-
-        RSocket.addNewStream({
-            route : 'accounts.all',
-            onNext: function(data) {
-                accounts = data;
-                if (self.page === 'OVERVIEW') {
-                    App.$container.html(self.accountsOverviewTmpl(
-                        { accounts : accounts }
-                    ));
-                }
-                $('.delete-account').click(function(evt) {
-                    evt.preventDefault();
-                    const id = $(this).data('id');
-                    $.ajax({
-                        type: 'DELETE',
-                        dataType: 'json',
-                        contentType : 'application/json',
-                        url: App.registry.accountsServiceRestUrl + '/deleteAccount/' + id,
-                        processData: false,
-                        success: function (data) {
-                            //alert('jroepi');
-                        }
-                    });
-                });
-                $('.change-name').click(function(evt) {
-                    evt.preventDefault();
-                    const id = $(this).data('id');
-                    const content = $(this).data('content');
-                    console.log(content);
-                    Tools.modal.show({
-                        title : 'Change Name',
-                        content : self.changeAccountNameTmpl(
-                            { account: content }
-                        ),
-                        confirmLbl : 'Change Name',
-                        autohide : true,
-                        callback : function(modal) {
-                            $.ajax({
-                                type: 'POST',
-                                dataType: 'json',
-                                contentType : 'application/json',
-                                url: App.registry.accountsServiceRestUrl + '/changeName/' + id,
-                                processData: false,
-                                data : Tools.formToJson(modal.modal.find('form')),
-                                success: function (data) {
-                                    //alert('jroepi');
-                                }
-                            });
-                        }
-                    });
-
-                });
-            }
-        })
-        */
-
 
         const addAccountHandler = this.addAccount.bind(this);
         $(document).on('click','body #add-account', addAccountHandler);
     };
+
+    Accounts.registerTableEvents = function() {
+        var self = this;
+        $('.delete-account').click(function(evt) {
+            evt.preventDefault();
+            const id = $(this).data('id');
+            $.ajax({
+                type: 'DELETE',
+                dataType: 'json',
+                contentType : 'application/json',
+                url: App.registry.accountsServiceRestUrl + '/deleteAccount/' + id,
+                processData: false,
+                success: function (data) {
+                    //alert('jroepi');
+                }
+            });
+        });
+
+        $('.change-name').click(function(evt) {
+            evt.preventDefault();
+            const id = $(this).data('id');
+            const content = $(this).data('content');
+            console.log(content);
+            Tools.modal.show({
+                title : 'Change Name',
+                content : self.changeAccountNameTmpl(
+                    { account: content }
+                ),
+                confirmLbl : 'Change Name',
+                autohide : true,
+                callback : function(modal) {
+                    $.ajax({
+                        type: 'POST',
+                        dataType: 'json',
+                        contentType : 'application/json',
+                        url: App.registry.accountsServiceRestUrl + '/changeName/' + id,
+                        processData: false,
+                        data : Tools.formToJson(modal.modal.find('form')),
+                        success: function (data) {
+                            //alert('jroepi');
+                        }
+                    });
+                }
+            });
+        });
+    }
 
     Accounts.addAccount = function() {
         Tools.modal.show({
@@ -154,19 +138,34 @@ var Accounts = {};
     Accounts.view = function(id) {
         var self = this;
         let account;
-        Websockets.addNewStream({
-            route : 'accounts.detail',
-            data : {id : id},
-            onNext: function(data) {
-                account = data;
-                if (self.page === 'DETAILS') {
-                    App.$container.html(self.accountDetailTmpl(
-                        { account : data }
-                    ));
-                }
+
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            contentType: 'application/json',
+            url: App.registry.accountsServiceRestUrl + '/accounts/' + id + '/details',
+            success: function (account) {
+                App.$container.html(self.accountDetailTmpl(
+                    {account: account}
+                ));
+                Websockets.connect({
+                    url : App.registry.accountsServiceRestUrl + "/accounts",
+                    connected: function(client) {
+                        client.subscribe('/topic/accounts/' + id + '/details', function (account) {
+                            console.log('account', account);
+                            account = JSON.parse(account.body);
+                            if (self.page === 'DETAILS') {
+                                App.$container.html(self.accountDetailTmpl(
+                                    {account: account}
+                                ));
+                            }
+                        });
+                    }
+                })
             }
-        })
+        });
     };
 
+//client.send("/app/accounts/details", {}, JSON.stringify({"id" : id}));
 
 })(jQuery);

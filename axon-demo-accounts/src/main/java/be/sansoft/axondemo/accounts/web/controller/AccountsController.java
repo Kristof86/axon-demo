@@ -1,15 +1,23 @@
-package be.sansoft.axondemo.accounts.web;
+package be.sansoft.axondemo.accounts.web.controller;
 
 import be.sansoft.axondemo.accounts.domain.commands.DeleteAccountCommand;
+import be.sansoft.axondemo.accounts.view.projection.details.AccountDetails;
+import be.sansoft.axondemo.accounts.view.projection.details.AccountDetailsEntity;
+import be.sansoft.axondemo.accounts.view.projection.overview.AccountsOverviewEntity;
+import be.sansoft.axondemo.accounts.view.projection.overview.AccountsOverviewRow;
+import be.sansoft.axondemo.accounts.view.query.FindAccountDetailsByIdQuery;
+import be.sansoft.axondemo.accounts.view.query.FindAllAccountsQuery;
+import be.sansoft.axondemo.accounts.web.websockets.WebsocketDataProvider;
 import be.sansoft.axondemo.accounts.web.request.ChangeNameRequest;
 import be.sansoft.axondemo.accounts.web.request.CreateAccountRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.gateway.CommandGateway;
+import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.concurrent.Future;
 
 /**
@@ -18,12 +26,12 @@ import java.util.concurrent.Future;
 @Slf4j
 @RestController
 public class AccountsController {
-    private final SimpMessagingTemplate simpMessagingTemplate;
+    private final WebsocketDataProvider websocketDataProvider;
     private final CommandGateway commandGateway;
     private final QueryGateway queryGateway;
 
-    public AccountsController(SimpMessagingTemplate simpMessagingTemplate, CommandGateway commandGateway, QueryGateway queryGateway) {
-        this.simpMessagingTemplate = simpMessagingTemplate;
+    public AccountsController(WebsocketDataProvider websocketDataProvider, CommandGateway commandGateway, QueryGateway queryGateway) {
+        this.websocketDataProvider = websocketDataProvider;
         this.commandGateway = commandGateway;
         this.queryGateway = queryGateway;
     }
@@ -49,5 +57,25 @@ public class AccountsController {
         log.info("Delete account {}", id);
         Future<String> future = commandGateway.send(DeleteAccountCommand.of(id));
         return ResponseEntity.ok(future);
+    }
+
+    @GetMapping("/accounts")
+    public ResponseEntity<List<AccountsOverviewRow>> findAll() {
+        return ResponseEntity.ok(
+                queryGateway
+                        .query(new FindAllAccountsQuery(), ResponseTypes.instanceOf(AccountsOverviewEntity.class))
+                        .join().getData().getRows()
+        );
+    }
+
+    @GetMapping("/accounts/{id}/details")
+    public ResponseEntity<AccountDetails> findDetails(
+            @PathVariable("id") String id) {
+        websocketDataProvider.addAccountDetailsSubscription(id);
+        return ResponseEntity.ok(
+                queryGateway
+                        .query(new FindAccountDetailsByIdQuery(id), ResponseTypes.instanceOf(AccountDetailsEntity.class))
+                        .join().getData()
+        );
     }
 }

@@ -1,7 +1,6 @@
 package be.sansoft.axondemo.accounts.view.projection.details;
 
-import be.sansoft.axondemo.accounts.view.projection.JpaAccountDetailsJsonConverter;
-import be.sansoft.axondemo.accounts.view.projection.JpaAccountsOverviewJsonConverter;
+import be.sansoft.axondemo.accounts.view.projection.json.JpaAccountDetailsJsonConverter;
 import lombok.Getter;
 import lombok.Setter;
 

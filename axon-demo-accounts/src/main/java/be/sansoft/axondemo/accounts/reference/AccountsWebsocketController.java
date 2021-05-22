@@ -1,4 +1,4 @@
-package be.sansoft.axondemo.accounts.web;
+package be.sansoft.axondemo.accounts.reference;
 
 import be.sansoft.axondemo.accounts.domain.commands.DeleteAccountCommand;
 import be.sansoft.axondemo.accounts.view.projection.details.AccountDetailsEntity;
@@ -23,10 +23,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 /**
+ * For reference only
+ *
  * @author kristofennekens
  */
 @Slf4j
-@Controller
 public class AccountsWebsocketController {
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final CommandGateway commandGateway;
@@ -38,7 +39,7 @@ public class AccountsWebsocketController {
         this.queryGateway = queryGateway;
     }
 
-    @MessageMapping("/accounts/details")
+    //@MessageMapping("/accounts/details")
     public void detail(FindAccountDetailsRequest request) {
         queryGateway
                 .subscriptionQuery(new FindAccountDetailsByIdQuery(request.getId()), AccountDetailsEntity.class, AccountDetailsEntity.class)
@@ -54,22 +55,5 @@ public class AccountsWebsocketController {
                             details.getData()
                     );
                 });
-    }
-
-    @MessageMapping("/accounts/all")
-    public void all() {
-        queryGateway.subscriptionQuery(new FindAllAccountsQuery(), AccountsOverviewEntity.class, AccountsOverviewEntity.class)
-                .handle(overview -> {
-                            simpMessagingTemplate.convertAndSend(
-                                    "/topic/accounts/all",
-                                    overview.getData().getRows()
-                            );
-                        },
-                        overview -> {
-                            simpMessagingTemplate.convertAndSend(
-                                    "/topic/accounts/all",
-                                    overview.getData().getRows()
-                            );
-                        });
     }
 }

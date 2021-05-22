@@ -1,6 +1,5 @@
-package be.sansoft.axondemo.accounts.view.projection;
+package be.sansoft.axondemo.accounts.view.projection.json;
 
-import be.sansoft.axondemo.accounts.view.projection.details.AccountDetails;
 import be.sansoft.axondemo.accounts.view.projection.overview.AccountsOverviewRowWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,12 +14,12 @@ import java.io.IOException;
  */
 @Slf4j
 @Converter
-public class JpaAccountDetailsJsonConverter implements AttributeConverter<AccountDetails, String> {
+public class JpaAccountsOverviewJsonConverter implements AttributeConverter<AccountsOverviewRowWrapper, String> {
 
     private final static ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public String convertToDatabaseColumn(AccountDetails meta) {
+    public String convertToDatabaseColumn(AccountsOverviewRowWrapper meta) {
         try {
             return objectMapper.writeValueAsString(meta);
         } catch (JsonProcessingException ex) {
@@ -30,9 +29,9 @@ public class JpaAccountDetailsJsonConverter implements AttributeConverter<Accoun
     }
 
     @Override
-    public AccountDetails convertToEntityAttribute(String dbData) {
+    public AccountsOverviewRowWrapper convertToEntityAttribute(String dbData) {
         try {
-            return objectMapper.readValue(dbData, AccountDetails.class);
+            return objectMapper.readValue(dbData, AccountsOverviewRowWrapper.class);
         } catch (IOException ex) {
             log.error("Could not deserialize json");
             throw new RuntimeException(ex);
