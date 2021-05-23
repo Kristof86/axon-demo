@@ -2,7 +2,7 @@ package be.sansoft.axondemo.accounts.view.projection.details;
 
 import be.sansoft.axondemo.accounts.domain.events.AccountCreatedEvent;
 import be.sansoft.axondemo.accounts.domain.events.AccountDeletedEvent;
-import be.sansoft.axondemo.accounts.domain.events.ChangeNameEvent;
+import be.sansoft.axondemo.accounts.domain.events.NameChangedEvent;
 import be.sansoft.axondemo.accounts.view.projection.overview.AccountDetailsRepository;
 import be.sansoft.axondemo.accounts.view.query.FindAccountDetailsByIdQuery;
 import org.axonframework.eventhandling.EventHandler;
@@ -55,7 +55,7 @@ public class AccountDetailsProjection {
     }
 
     @EventHandler
-    public void on(ChangeNameEvent event) {
+    public void on(NameChangedEvent event) {
         repository.findById(event.getId()).ifPresent(entity -> {
             entity.getData().setFirstName(event.getFirstName());
             entity.getData().setLastName(event.getLastName());

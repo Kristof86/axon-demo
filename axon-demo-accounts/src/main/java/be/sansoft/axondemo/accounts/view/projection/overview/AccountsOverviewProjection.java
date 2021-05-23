@@ -2,7 +2,7 @@ package be.sansoft.axondemo.accounts.view.projection.overview;
 
 import be.sansoft.axondemo.accounts.domain.events.AccountCreatedEvent;
 import be.sansoft.axondemo.accounts.domain.events.AccountDeletedEvent;
-import be.sansoft.axondemo.accounts.domain.events.ChangeNameEvent;
+import be.sansoft.axondemo.accounts.domain.events.NameChangedEvent;
 import be.sansoft.axondemo.accounts.view.query.FindAllAccountsQuery;
 import org.apache.commons.collections4.CollectionUtils;
 import org.axonframework.eventhandling.EventHandler;
@@ -43,7 +43,7 @@ public class AccountsOverviewProjection {
     }
 
     @EventHandler
-    public void on(ChangeNameEvent event) {
+    public void on(NameChangedEvent event) {
         AccountsOverviewEntity entity = repository.findAll().get(0);
         entity.getData().getRows().stream().filter(row -> row.getId().equals(event.getId())).findFirst().ifPresent( row -> {
             row.setFirstName(event.getFirstName());
