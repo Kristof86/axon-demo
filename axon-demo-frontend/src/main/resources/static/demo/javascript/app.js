@@ -4,6 +4,8 @@ var App = {
 (function($) {
     App.init = function () {
 
+        console.log('Init application');
+
         // Load settings
         this.loadRegistry();
 
@@ -13,26 +15,7 @@ var App = {
         // Init modules
         Tools.init();
         Accounts.init();
-        RSocket.init();
-
-        /*
-        var scopeHandler = function () {
-            Scopes.activateMenu();
-        };
-
-        var contextHandler = function () {
-            Contexts.activateMenu();
-        };
-
-        var routes = {
-            '/scopes': scopeHandler,
-            '/contexts': contextHandler
-        };
-
-        // Scopes is default page loaded
-        var router = Router(routes).init('/scopes');
-
-         */
+        //RSocket.init();
 
     };
 
@@ -42,7 +25,8 @@ var App = {
             contextPath = '';
         }
         this.registry.contextPath = contextPath;
-        //this.registry.accountsServiceUrl = 'http://localhost:8080'
-        this.registry.accountsServiceUrl = 'https://axon-demo-accounts-kristof86.cloud.okteto.net'
+        this.registry.accountsServiceRestUrl = $("meta[name='accountsServiceRestUrl']").attr('content');
+        this.registry.accountsServiceWsUrl = $("meta[name='accountsServiceWsUrl']").attr('content');
+        console.log('Registry loaded ', this.registry);
     };
 })(jQuery);

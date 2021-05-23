@@ -11,5 +11,5 @@ import lombok.*;
 @Builder
 public class AccountsOverviewRow {
 
-    private String id, firstName, lastName, email, password;
+    private String id, firstName, lastName, email;
 }

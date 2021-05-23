@@ -1,29 +1,24 @@
-package be.sansoft.axondemo.accounts.web;
+package be.sansoft.axondemo.accounts.web.controller;
 
-import be.sansoft.axondemo.accounts.domain.commands.ChangeNameCommand;
 import be.sansoft.axondemo.accounts.domain.commands.DeleteAccountCommand;
 import be.sansoft.axondemo.accounts.view.projection.details.AccountDetails;
 import be.sansoft.axondemo.accounts.view.projection.details.AccountDetailsEntity;
 import be.sansoft.axondemo.accounts.view.projection.overview.AccountsOverviewEntity;
 import be.sansoft.axondemo.accounts.view.projection.overview.AccountsOverviewRow;
+import be.sansoft.axondemo.accounts.view.projection.overview.AccountsOverviewRowWrapper;
 import be.sansoft.axondemo.accounts.view.query.FindAccountDetailsByIdQuery;
 import be.sansoft.axondemo.accounts.view.query.FindAllAccountsQuery;
+import be.sansoft.axondemo.accounts.web.websockets.WebsocketDataProvider;
 import be.sansoft.axondemo.accounts.web.request.ChangeNameRequest;
 import be.sansoft.axondemo.accounts.web.request.CreateAccountRequest;
-import be.sansoft.axondemo.accounts.web.request.FindAccountDetailsRequest;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.gateway.CommandGateway;
-import org.axonframework.extensions.reactor.queryhandling.gateway.ReactorQueryGateway;
+import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Flux;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 /**
@@ -32,17 +27,14 @@ import java.util.concurrent.Future;
 @Slf4j
 @RestController
 public class AccountsController {
-
-    private final ReactorQueryGateway reactorQueryGateway;
+    private final WebsocketDataProvider websocketDataProvider;
     private final CommandGateway commandGateway;
     private final QueryGateway queryGateway;
-    private final ObjectMapper objectMapper;
 
-    public AccountsController(ReactorQueryGateway reactorQueryGateway, CommandGateway commandGateway, QueryGateway queryGateway, ObjectMapper objectMapper) {
-        this.reactorQueryGateway = reactorQueryGateway;
+    public AccountsController(WebsocketDataProvider websocketDataProvider, CommandGateway commandGateway, QueryGateway queryGateway) {
+        this.websocketDataProvider = websocketDataProvider;
         this.commandGateway = commandGateway;
         this.queryGateway = queryGateway;
-        this.objectMapper = objectMapper;
     }
 
     @PostMapping("/createAccount")
@@ -68,32 +60,25 @@ public class AccountsController {
         return ResponseEntity.ok(future);
     }
 
-    @MessageMapping("accounts.detail")
-    public Flux<AccountDetails> all(FindAccountDetailsRequest request) {
-        return reactorQueryGateway.subscriptionQuery(new FindAccountDetailsByIdQuery(request.getId()), AccountDetailsEntity.class)
-                .map(AccountDetailsEntity::getData);
+    @GetMapping("/accounts")
+    public ResponseEntity<List<AccountsOverviewRow>> findAll() {
+        AccountsOverviewEntity overview = queryGateway
+                .query(new FindAllAccountsQuery(), ResponseTypes.instanceOf(AccountsOverviewEntity.class))
+                .join();
+
+        return ResponseEntity.ok(
+                overview != null ? overview.getData().getRows() : List.of()
+        );
     }
 
-    @MessageMapping("accounts.all")
-    public Flux<List<AccountsOverviewRow>> all() {
-
-        return reactorQueryGateway.subscriptionQuery(new FindAllAccountsQuery(), AccountsOverviewEntity.class).map(entity -> entity.getData().getRows());
-
-    }
-
-    /*
-    @GetMapping("/findAllAccounts")
-    public ResponseEntity<List<AccountsRow>> findAllAccounts() throws JsonProcessingException {
-        AccountsEntity entity = queryGateway.query(new FindAllAccountsQuery(), AccountsEntity.class).join();
-        List<AccountsRow> accounts = objectMapper.readValue(entity.getData(), List.class);
-        return ResponseEntity.ok(accounts);
-    }
-     */
-
-
-    @GetMapping("/findAccountDetails/{id}")
-    public CompletableFuture<AccountDetailsEntity> findAccountDetails(@PathVariable("id") String id) throws JsonProcessingException {
-        CompletableFuture<AccountDetailsEntity> query = queryGateway.query(new FindAccountDetailsByIdQuery(id), AccountDetailsEntity.class);
-        return query;
+    @GetMapping("/accounts/{id}/details")
+    public ResponseEntity<AccountDetails> findDetails(
+            @PathVariable("id") String id) {
+        websocketDataProvider.addAccountDetailsSubscription(id);
+        return ResponseEntity.ok(
+                queryGateway
+                        .query(new FindAccountDetailsByIdQuery(id), ResponseTypes.instanceOf(AccountDetailsEntity.class))
+                        .join().getData()
+        );
     }
 }

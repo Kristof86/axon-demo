@@ -5,15 +5,13 @@ import be.sansoft.axondemo.accounts.domain.commands.CreateAccountCommand;
 import be.sansoft.axondemo.accounts.domain.commands.DeleteAccountCommand;
 import be.sansoft.axondemo.accounts.domain.events.AccountCreatedEvent;
 import be.sansoft.axondemo.accounts.domain.events.AccountDeletedEvent;
-import be.sansoft.axondemo.accounts.domain.events.ChangeNameEvent;
+import be.sansoft.axondemo.accounts.domain.events.NameChangedEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
-
-import java.time.Duration;
 
 /**
  * @author kristofennekens
@@ -45,7 +43,7 @@ public class Account {
 
     @CommandHandler
     public void handle(ChangeNameCommand cmd) {
-        AggregateLifecycle.apply(ChangeNameEvent.fromCommand(cmd));
+        AggregateLifecycle.apply(NameChangedEvent.fromCommand(cmd));
     }
 
     @EventSourcingHandler
@@ -59,7 +57,7 @@ public class Account {
     }
 
     @EventSourcingHandler
-    public void handle(ChangeNameEvent event) {
+    public void handle(NameChangedEvent event) {
         this.firstName = event.getFirstName();
         this.lastName = event.getLastName();
     }

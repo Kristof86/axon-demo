@@ -1,6 +1,7 @@
 var Tools = {};
 (function($) {
     Tools.init = function() {
+        console.log('Init Tools Module')
         Tools.modal.init();
     };
     Tools.setTitle = function(title) {
@@ -40,30 +41,6 @@ var Tools = {};
                 }
             }
         }
-    };
-    Tools.showErrors = function(errors, context) {
-        this.removeErrors(context);
-
-        for (var i in errors) {
-            var field = errors[i].field;
-            var msg = errors[i].msg;
-            var fields = field.split('.');
-            if (fields.length > 2) {
-                field = fields[0] + '[' + fields[1] + ']'+ '[' + fields[2] + ']';
-            }
-            else if (fields.length > 1) {
-                field = fields[0] + '[' + fields[1] + ']';
-            }
-            console.log(field);
-            var $field = $('[name^="' + field + '"]', context);
-            var $fieldContainer = $field.closest('.form-group');
-            $fieldContainer.addClass('has-error');
-            $fieldContainer.append('<label class="help-block control-label">' + msg + '</label>');
-        }
-    };
-    Tools.removeErrors = function(context) {
-        $('label.help-block', context).remove();
-        $('.has-error', context).removeClass('has-error');
     };
 
     Tools.modal = {};

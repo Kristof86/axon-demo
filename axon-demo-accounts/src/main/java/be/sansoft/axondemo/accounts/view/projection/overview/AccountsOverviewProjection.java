@@ -2,7 +2,7 @@ package be.sansoft.axondemo.accounts.view.projection.overview;
 
 import be.sansoft.axondemo.accounts.domain.events.AccountCreatedEvent;
 import be.sansoft.axondemo.accounts.domain.events.AccountDeletedEvent;
-import be.sansoft.axondemo.accounts.domain.events.ChangeNameEvent;
+import be.sansoft.axondemo.accounts.domain.events.NameChangedEvent;
 import be.sansoft.axondemo.accounts.view.query.FindAllAccountsQuery;
 import org.apache.commons.collections4.CollectionUtils;
 import org.axonframework.eventhandling.EventHandler;
@@ -27,7 +27,7 @@ public class AccountsOverviewProjection {
     }
 
     @EventHandler
-    public void handle(AccountCreatedEvent event) {
+    public void on(AccountCreatedEvent event) {
         List<AccountsOverviewEntity> accounts = repository.findAll();
         if (CollectionUtils.isEmpty(accounts)) {
             repository.save(AccountsOverviewEntity.of(
@@ -43,20 +43,20 @@ public class AccountsOverviewProjection {
     }
 
     @EventHandler
-    public void handle(ChangeNameEvent event) {
+    public void on(NameChangedEvent event) {
         AccountsOverviewEntity entity = repository.findAll().get(0);
         entity.getData().getRows().stream().filter(row -> row.getId().equals(event.getId())).findFirst().ifPresent( row -> {
             row.setFirstName(event.getFirstName());
             row.setLastName(event.getLastName());
-        });
 
-        queryUpdateEmitter.emit(FindAllAccountsQuery.class,
-                query -> true,
-                findAll(new FindAllAccountsQuery()));
+            queryUpdateEmitter.emit(FindAllAccountsQuery.class,
+                    query -> true,
+                    findAll(new FindAllAccountsQuery()));
+        });
     }
 
     @EventHandler
-    public void handle(AccountDeletedEvent event) {
+    public void on(AccountDeletedEvent event) {
         List<AccountsOverviewEntity> accounts = repository.findAll();
         if (CollectionUtils.isEmpty(accounts)) {
             return;
@@ -76,13 +76,13 @@ public class AccountsOverviewProjection {
                 .firstName(event.getFirstName())
                 .lastName(event.getLastName())
                 .email(event.getEmail())
-                .password(event.getPassword())
                 .build();
     }
 
     @QueryHandler
     public AccountsOverviewEntity findAll(FindAllAccountsQuery query) {
-        return repository.findAll().get(0);
+        List<AccountsOverviewEntity> all = repository.findAll();
+        return CollectionUtils.isEmpty(all) ? null : all.get(0);
     }
 
 }

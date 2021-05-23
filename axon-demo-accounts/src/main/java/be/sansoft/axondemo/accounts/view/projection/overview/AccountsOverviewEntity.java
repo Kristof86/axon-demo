@@ -1,6 +1,6 @@
 package be.sansoft.axondemo.accounts.view.projection.overview;
 
-import be.sansoft.axondemo.accounts.view.projection.JpaAccountsOverviewJsonConverter;
+import be.sansoft.axondemo.accounts.view.projection.json.JpaAccountsOverviewJsonConverter;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;

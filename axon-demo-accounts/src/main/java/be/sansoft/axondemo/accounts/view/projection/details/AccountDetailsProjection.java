@@ -1,10 +1,10 @@
 package be.sansoft.axondemo.accounts.view.projection.details;
 
 import be.sansoft.axondemo.accounts.domain.events.AccountCreatedEvent;
-import be.sansoft.axondemo.accounts.domain.events.ChangeNameEvent;
+import be.sansoft.axondemo.accounts.domain.events.AccountDeletedEvent;
+import be.sansoft.axondemo.accounts.domain.events.NameChangedEvent;
 import be.sansoft.axondemo.accounts.view.projection.overview.AccountDetailsRepository;
 import be.sansoft.axondemo.accounts.view.query.FindAccountDetailsByIdQuery;
-import be.sansoft.axondemo.accounts.view.query.FindAllAccountsQuery;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.queryhandling.QueryHandler;
 import org.axonframework.queryhandling.QueryUpdateEmitter;
@@ -25,7 +25,7 @@ public class AccountDetailsProjection {
     }
 
     @EventHandler
-    public void handle(AccountCreatedEvent event) {
+    public void on(AccountCreatedEvent event) {
         repository.findById(event.getId()).ifPresentOrElse(
                 entity -> {
                     entity.getData().setFirstName(event.getFirstName());
@@ -55,19 +55,30 @@ public class AccountDetailsProjection {
     }
 
     @EventHandler
-    public void handle(ChangeNameEvent event) {
-        AccountDetailsEntity entity = repository.findById(event.getId()).get();
-        entity.getData().setFirstName(event.getFirstName());
-        entity.getData().setLastName(event.getLastName());
+    public void on(NameChangedEvent event) {
+        repository.findById(event.getId()).ifPresent(entity -> {
+            entity.getData().setFirstName(event.getFirstName());
+            entity.getData().setLastName(event.getLastName());
 
-        queryUpdateEmitter.emit(FindAccountDetailsByIdQuery.class,
-                query -> query.getId().equals(event.getId()),
-                findDetails(new FindAccountDetailsByIdQuery(event.getId())));
+            queryUpdateEmitter.emit(FindAccountDetailsByIdQuery.class,
+                    query -> query.getId().equals(event.getId()),
+                    findDetails(new FindAccountDetailsByIdQuery(event.getId())));
+            }
+        );
+    }
+
+    @EventHandler
+    public void on(AccountDeletedEvent event) {
+        repository.findById(event.getId()).ifPresent(entity -> {
+            repository.delete(entity);
+            queryUpdateEmitter.emit(FindAccountDetailsByIdQuery.class,
+                    query -> query.getId().equals(event.getId()),
+                    findDetails(new FindAccountDetailsByIdQuery(event.getId())));
+        });
     }
 
     @QueryHandler
     public AccountDetailsEntity findDetails(FindAccountDetailsByIdQuery query) {
         return repository.findById(query.getId()).orElse(null);
     }
-
 }

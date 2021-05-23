@@ -7,10 +7,10 @@ const {
 const RSocketWebSocketClient = require('rsocket-websocket-client').default;
 
 function main() {
-    RSocket.RSocketClient = RSocketClient;
-    RSocket.JsonSerializer = JsonSerializer;
-    RSocket.IdentitySerializer = IdentitySerializer;
-    RSocket.RSocketWebSocketClient = RSocketWebSocketClient;
+    Websockets.RSocketClient = RSocketClient;
+    Websockets.JsonSerializer = JsonSerializer;
+    Websockets.IdentitySerializer = IdentitySerializer;
+    Websockets.RSocketWebSocketClient = RSocketWebSocketClient;
 }
 
 document.addEventListener('DOMContentLoaded', main);

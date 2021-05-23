@@ -8,13 +8,13 @@ import lombok.Getter;
  * @author kristofennekens
  */
 @Getter
-public class ChangeNameEvent {
+public class NameChangedEvent {
     private String id, firstName, lastName;
 
-    private ChangeNameEvent() {}
+    private NameChangedEvent() {}
 
-    public static ChangeNameEvent fromCommand(ChangeNameCommand cmd) {
-        ChangeNameEvent event = new ChangeNameEvent();
+    public static NameChangedEvent fromCommand(ChangeNameCommand cmd) {
+        NameChangedEvent event = new NameChangedEvent();
         event.id = cmd.getId();
         event.firstName = cmd.getFirstName();
         event.lastName = cmd.getLastName();
