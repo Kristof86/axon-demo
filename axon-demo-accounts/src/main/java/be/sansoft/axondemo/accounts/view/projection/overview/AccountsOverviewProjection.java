@@ -76,7 +76,6 @@ public class AccountsOverviewProjection {
                 .firstName(event.getFirstName())
                 .lastName(event.getLastName())
                 .email(event.getEmail())
-                .password(event.getPassword())
                 .build();
     }
 
