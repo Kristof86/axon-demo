@@ -10,7 +10,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <groupId>be.sansoft</groupId>
+    <groupId>be.craftworkz</groupId>
     <artifactId>axon-demo</artifactId>
     <version>1.0-SNAPSHOT</version>
 
@@ -24,12 +24,19 @@
     </properties>
 
     <modules>
-        <module>axon-demo-accounts</module>
-        <module>axon-demo-frontend</module>
+        <module>axon-demo-ui</module>
+        <module>axon-demo-accounts-command-api</module>
+        <module>axon-demo-accounts-query-api</module>
+        <module>axon-demo-accounts-core-api</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>be.craftworkz</groupId>
+                <artifactId>axon-demo-accounts-core-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.axonframework</groupId>
                 <artifactId>axon-spring-boot-starter</artifactId>

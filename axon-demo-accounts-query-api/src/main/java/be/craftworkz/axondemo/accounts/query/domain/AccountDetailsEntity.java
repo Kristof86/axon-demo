@@ -1,0 +1,32 @@
+package be.craftworkz.axondemo.accounts.query.domain;
+
+import be.craftworkz.axondemo.accounts.query.domain.json.JpaAccountDetailsJsonConverter;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.*;
+
+/**
+ * @author kristofennekens
+ */
+@Entity
+@Table(name = "account_details")
+public class AccountDetailsEntity {
+
+    @Id
+    private String id;
+
+    @Getter
+    @Setter
+    @Column(name = "data", columnDefinition = "text")
+    @Convert(converter = JpaAccountDetailsJsonConverter.class)
+    private AccountDetails data;
+
+    public static AccountDetailsEntity of(String id, AccountDetails data) {
+        AccountDetailsEntity entity = new AccountDetailsEntity();
+        entity.id = id;
+        entity.data = data;
+        return entity;
+    }
+
+}
