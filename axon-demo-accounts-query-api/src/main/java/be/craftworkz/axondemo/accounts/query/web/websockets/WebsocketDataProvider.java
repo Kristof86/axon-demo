@@ -33,7 +33,9 @@ public class WebsocketDataProvider {
     }
 
     public void addAccountsOverviewSubscription() {
+        log.info("Init account overview subscription");
         if (!accountsOverviewSubscription) {
+            log.info("Not subscribed yet, subscribe");
             accountsOverviewSubscription = true;
             Consumer<AccountsOverviewEntity> handleResult = overview -> {
                 log.debug("Send to /topic/accounts/all");
@@ -50,7 +52,9 @@ public class WebsocketDataProvider {
     }
 
     public void addAccountDetailsSubscription(String id) {
+        log.info("Init account details subscription");
         if (!accountDetailSubscriptions.contains(id)) {
+            log.info("Not subscribed yet, subscribe");
             accountDetailSubscriptions.add(id);
             Consumer<AccountDetailsEntity> handleResult = details -> {
                 log.debug("Send to /topic/accounts/" + id + "/details");
