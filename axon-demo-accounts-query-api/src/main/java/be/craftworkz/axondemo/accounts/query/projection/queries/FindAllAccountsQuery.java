@@ -1,4 +1,4 @@
-package be.craftworkz.axondemo.accounts.query.projection;
+package be.craftworkz.axondemo.accounts.query.projection.queries;
 
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;

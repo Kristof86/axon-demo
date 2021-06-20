@@ -2,12 +2,10 @@ package be.craftworkz.axondemo.accounts.query.web.websockets;
 
 import be.craftworkz.axondemo.accounts.query.domain.AccountDetailsEntity;
 import be.craftworkz.axondemo.accounts.query.domain.AccountsOverviewEntity;
-import be.craftworkz.axondemo.accounts.query.projection.FindAccountDetailsByIdQuery;
-import be.craftworkz.axondemo.accounts.query.projection.FindAllAccountsQuery;
+import be.craftworkz.axondemo.accounts.query.projection.queries.FindAccountDetailsByIdQuery;
+import be.craftworkz.axondemo.accounts.query.projection.queries.FindAllAccountsQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.queryhandling.QueryGateway;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
@@ -33,10 +31,10 @@ public class WebsocketDataProvider {
     }
 
     public void addAccountsOverviewSubscription() {
-        log.info("Init account overview subscription");
+        // Only subscribe once
         if (!accountsOverviewSubscription) {
-            log.info("Not subscribed yet, subscribe");
             accountsOverviewSubscription = true;
+
             Consumer<AccountsOverviewEntity> handleResult = overview -> {
                 log.debug("Send to /topic/accounts/all");
                 simpMessagingTemplate.convertAndSend(
@@ -52,10 +50,10 @@ public class WebsocketDataProvider {
     }
 
     public void addAccountDetailsSubscription(String id) {
-        log.info("Init account details subscription");
+        // Only subscribe once for every id
         if (!accountDetailSubscriptions.contains(id)) {
-            log.info("Not subscribed yet, subscribe");
             accountDetailSubscriptions.add(id);
+
             Consumer<AccountDetailsEntity> handleResult = details -> {
                 log.debug("Send to /topic/accounts/" + id + "/details");
                 simpMessagingTemplate.convertAndSend(
@@ -63,8 +61,9 @@ public class WebsocketDataProvider {
                         details.getData()
                 );
             };
+
             queryGateway
-                    .subscriptionQuery(new FindAccountDetailsByIdQuery(id), AccountDetailsEntity.class, AccountDetailsEntity.class)
+                    .subscriptionQuery(FindAccountDetailsByIdQuery.of(id), AccountDetailsEntity.class, AccountDetailsEntity.class)
                     .handle(handleResult, handleResult);
         }
     }

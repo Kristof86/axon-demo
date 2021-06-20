@@ -4,8 +4,8 @@ import be.craftworkz.axondemo.accounts.query.domain.AccountDetails;
 import be.craftworkz.axondemo.accounts.query.domain.AccountDetailsEntity;
 import be.craftworkz.axondemo.accounts.query.domain.AccountsOverviewEntity;
 import be.craftworkz.axondemo.accounts.query.domain.AccountsOverviewRow;
-import be.craftworkz.axondemo.accounts.query.projection.FindAccountDetailsByIdQuery;
-import be.craftworkz.axondemo.accounts.query.projection.FindAllAccountsQuery;
+import be.craftworkz.axondemo.accounts.query.projection.queries.FindAccountDetailsByIdQuery;
+import be.craftworkz.axondemo.accounts.query.projection.queries.FindAllAccountsQuery;
 import be.craftworkz.axondemo.accounts.query.web.websockets.WebsocketDataProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
@@ -35,7 +35,12 @@ public class AccountController {
 
     @GetMapping("")
     public ResponseEntity<List<AccountsOverviewRow>> findAll() {
+        log.info("Find all accounts");
+
+        // Subscribe to account overview updates
         websocketDataProvider.addAccountsOverviewSubscription();
+
+        // Find accounts overview
         AccountsOverviewEntity overview = queryGateway
                 .query(new FindAllAccountsQuery(), ResponseTypes.instanceOf(AccountsOverviewEntity.class))
                 .join();
@@ -48,10 +53,15 @@ public class AccountController {
     @GetMapping("/{id}/details")
     public ResponseEntity<AccountDetails> findDetails(
             @PathVariable("id") String id) {
+        log.info("Find account details by id{}", id);
+
+        // Subscribe to account overview updates
         websocketDataProvider.addAccountDetailsSubscription(id);
+
+        // Find account details
         return ResponseEntity.ok(
                 queryGateway
-                        .query(new FindAccountDetailsByIdQuery(id), ResponseTypes.instanceOf(AccountDetailsEntity.class))
+                        .query(FindAccountDetailsByIdQuery.of(id), ResponseTypes.instanceOf(AccountDetailsEntity.class))
                         .join().getData()
         );
     }

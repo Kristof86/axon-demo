@@ -34,7 +34,7 @@ public class AccountController {
     public ResponseEntity<Future<String>> changeName(
             @RequestBody ChangeNameRequest request,
             @PathVariable("id") String id) {
-        log.info("Create account {}", request);
+        log.info("Change account's name {}", request);
         Future<String> future = commandGateway.send(request.toCommand(id));
         return ResponseEntity.ok(future);
     }

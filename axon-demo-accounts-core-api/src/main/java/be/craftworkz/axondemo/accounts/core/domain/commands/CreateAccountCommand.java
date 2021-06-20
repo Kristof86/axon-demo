@@ -9,19 +9,16 @@ import java.util.UUID;
 /**
  * @author kristofennekens
  */
-@Slf4j
 @Getter
 public class CreateAccountCommand {
 
-    @TargetAggregateIdentifier
-    private String id;
+    private final String id;
     private String firstName, lastName, email, password;
-    
+
     private CreateAccountCommand() {
         this.id = UUID.randomUUID().toString();
-        log.debug("New CreateAccountRequestCommand with id {}", this.id);
     }
-    
+
     public static CreateAccountCommand of(
             String firstName,
             String lastName,
@@ -34,5 +31,4 @@ public class CreateAccountCommand {
         cmd.password = password;
         return cmd;
     }
-
 }

@@ -31,24 +31,26 @@ public class Account {
 
     @CommandHandler
     public Account(CreateAccountCommand cmd) {
-        log.debug("Handle CreateAccountRequestCommand");
+        log.debug("[CommandHandler] Handle CreateAccountRequestCommand");
         AggregateLifecycle.apply(AccountCreatedEvent.fromCommand(cmd));
     }
 
     @CommandHandler
     public void handle(DeleteAccountCommand cmd) {
+        log.debug("[CommandHandler] Handle DeleteAccountCommand");
         AggregateLifecycle.apply(AccountDeletedEvent.fromCommand(cmd));
         AggregateLifecycle.markDeleted();
     }
 
     @CommandHandler
     public void handle(ChangeNameCommand cmd) {
+        log.debug("[CommandHandler] Handle ChangeNameCommand");
         AggregateLifecycle.apply(NameChangedEvent.fromCommand(cmd));
     }
 
     @EventSourcingHandler
     public void handle(AccountCreatedEvent event) {
-        log.debug("Handle AccountCreatedEvent");
+        log.debug("[EventSourcingHandler] Handle AccountCreatedEvent");
         this.id = event.getId();
         this.firstName = event.getFirstName();
         this.lastName = event.getLastName();
@@ -58,6 +60,7 @@ public class Account {
 
     @EventSourcingHandler
     public void handle(NameChangedEvent event) {
+        log.debug("[EventSourcingHandler] Handle NameChangedEvent");
         this.firstName = event.getFirstName();
         this.lastName = event.getLastName();
     }

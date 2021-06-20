@@ -12,6 +12,6 @@ public class RootController {
 
     @GetMapping("/")
     public ResponseEntity<String> root() {
-        return ResponseEntity.ok("We are online!");
+        return ResponseEntity.ok("This is the Accounts Query API");
     }
 }

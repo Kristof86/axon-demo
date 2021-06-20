@@ -19,7 +19,7 @@ public class DeleteAccountCommand {
     }
 
     private DeleteAccountCommand(String id) {
-        log.debug("New DeleteAccountCommand with id {}", this.id);
+        log.debug("New DeleteAccountCommand with id {}", id);
         this.id = id;
     }
     
